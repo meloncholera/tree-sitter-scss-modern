@@ -1,6 +1,7 @@
 adjacent_sibling_selector
 argument{name,value}
 arguments
+as_clause
 at_keyword
 at_root_statement
 at_rule
@@ -26,6 +27,7 @@ error_statement
 extend_statement
 feature_name
 feature_query
+flag
 float_value
 for_statement{from,through}
 forward_statement
@@ -33,6 +35,7 @@ from
 function_name
 function_statement{name}
 grid_value
+hide_clause
 id_name
 id_selector
 identifier
@@ -49,6 +52,8 @@ keyframes_name
 keyframes_statement
 keyword_query
 list_value
+map_pair{key,value}
+map_value
 media_statement
 mixin_statement{name}
 namespace_name
@@ -69,6 +74,7 @@ return_statement
 rule_set
 selector_query
 selectors
+show_clause
 sibling_selector
 string_value
 stylesheet
@@ -82,3 +88,4 @@ use_statement
 variable
 warn_statement
 while_statement
+with_clause

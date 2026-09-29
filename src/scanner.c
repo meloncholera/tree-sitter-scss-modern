@@ -7,6 +7,7 @@ enum TokenType {
     PSEUDO_CLASS_SELECTOR_COLON,
     ERROR_RECOVERY,
     CONCAT,
+    MAP_KEY,
 };
 
 static inline void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
@@ -22,6 +23,34 @@ void tree_sitter_scss_external_scanner_reset(void *payload) {}
 unsigned tree_sitter_scss_external_scanner_serialize(void *payload, char *buffer) { return 0; }
 
 void tree_sitter_scss_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {}
+
+// Scans a bare-word map key: identifier characters followed, after optional whitespace, by a single
+// colon. The token ends before the colon. The base grammar's plain value token would otherwise
+// swallow the colon (`key:` is a valid plain value), so the key has to be recognized here.
+static bool scan_map_key(TSLexer *lexer) {
+    while (iswspace(lexer->lookahead)) {
+        skip(lexer);
+    }
+    if (!(iswalpha(lexer->lookahead) || lexer->lookahead == '_' || lexer->lookahead == '-')) {
+        return false;
+    }
+    while (iswalnum(lexer->lookahead) || lexer->lookahead == '_' || lexer->lookahead == '-') {
+        advance(lexer);
+    }
+    lexer->mark_end(lexer);
+    while (iswspace(lexer->lookahead)) {
+        advance(lexer);
+    }
+    if (lexer->lookahead != ':') {
+        return false;
+    }
+    advance(lexer);
+    if (lexer->lookahead == ':') {
+        return false;
+    }
+    lexer->result_symbol = MAP_KEY;
+    return true;
+}
 
 bool tree_sitter_scss_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[ERROR_RECOVERY]) {
@@ -91,6 +120,10 @@ bool tree_sitter_scss_external_scanner_scan(void *payload, TSLexer *lexer, const
             }
             return false;
         }
+    }
+
+    if (valid_symbols[MAP_KEY]) {
+        return scan_map_key(lexer);
     }
 
     return false;

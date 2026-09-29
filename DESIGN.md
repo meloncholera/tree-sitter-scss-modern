@@ -57,6 +57,13 @@ The 40-construct probe list is recorded as corpus tests in `test/corpus/probes.t
 already parsed are there from the start; each failing construct is added in the same change that
 fixes it.
 
+### Progress against the real corpus
+
+| Step | Files with problems | Change |
+|---|---|---|
+| Baseline | 51 of 182 (28.0%) | Inherited grammar |
+| M1: module system, flags, maps | 33 of 182 (18.1%) | `@use`/`@forward` clauses, `!default`/`!global`, maps (bare-word keys need an external scanner token because the base plain value token swallows a trailing colon), and a `last_declaration` that accepts variable and interpolated names |
+
 Constructs that already parse and must keep parsing: `@mixin`/`@function` with default and keyword
 arguments, `@content` with arguments, `@include` with a content block, `@if`/`@else if`/`@else`,
 `@each` over a map with key and value, `@for ... through`, `@while`, `@return`, placeholders in
