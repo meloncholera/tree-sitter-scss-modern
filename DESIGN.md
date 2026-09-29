@@ -63,6 +63,7 @@ fixes it.
 |---|---|---|
 | Baseline | 51 of 182 (28.0%) | Inherited grammar |
 | M1: module system, flags, maps | 33 of 182 (18.1%) | `@use`/`@forward` clauses, `!default`/`!global`, maps (bare-word keys need an external scanner token because the base plain value token swallows a trailing colon), and a `last_declaration` that accepts variable and interpolated names |
+| M2: control flow and mixins | 33 of 182 (18.1%) | `not`/`and`/`or` with Sass operator precedence, `@for ... to`, multi-variable `@each`, rest and spread arguments, `@include ... using`, keyword arguments in calls. The real corpus uses none of these constructs, so its rate does not move |
 
 Constructs that already parse and must keep parsing: `@mixin`/`@function` with default and keyword
 arguments, `@content` with arguments, `@include` with a content block, `@if`/`@else if`/`@else`,

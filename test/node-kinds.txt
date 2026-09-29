@@ -1,6 +1,6 @@
 adjacent_sibling_selector
 argument{name,value}
-arguments
+arguments{name}
 as_clause
 at_keyword
 at_root_statement
@@ -29,7 +29,7 @@ feature_name
 feature_query
 flag
 float_value
-for_statement{from,through}
+for_statement{from,through,to}
 forward_statement
 from
 function_name
@@ -81,6 +81,7 @@ stylesheet
 supports_statement
 tag_name
 to
+unary_expression
 unary_query
 unit
 universal_selector

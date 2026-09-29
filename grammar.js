@@ -116,6 +116,7 @@ export default grammar(CSS, {
         original,
         prec(-1, choice($.nesting_selector, $._concatenated_identifier, $.list_value)),
         $.map_value,
+        $.unary_expression,
         $.variable,
       ),
 
@@ -159,9 +160,9 @@ export default grammar(CSS, {
     include_statement: ($) =>
       seq(
         '@include',
-        $.identifier,
+        choice($.identifier, alias($.plain_value, $.identifier)),
         optional(alias($._include_arguments, $.arguments)),
-        choice($.block, ';'),
+        choice(seq(optional(seq('using', $.parameters)), $.block), ';'),
       ),
 
     _include_arguments: ($) =>
@@ -172,14 +173,15 @@ export default grammar(CSS, {
       ),
 
     _include_argument: ($) =>
-      seq(optional(seq(field('name', $.variable), ':')), field('value', $._value)),
+      seq(optional(seq(field('name', $.variable), ':')), field('value', $._value), optional('...')),
 
     function_statement: ($) =>
       seq('@function', field('name', $.identifier), optional($.parameters), $.block),
 
     parameters: ($) => seq('(', sep1(',', $.parameter), ')'),
 
-    parameter: ($) => seq($.variable, optional(seq(':', field('default', $._value)))),
+    parameter: ($) =>
+      seq($.variable, optional(choice(seq(':', field('default', $._value)), '...'))),
 
     return_statement: ($) => seq('@return', $._value, ';'),
 
@@ -209,10 +211,13 @@ export default grammar(CSS, {
     each_statement: ($) =>
       seq(
         '@each',
-        optional(seq(field('key', $.variable), ',')),
-        field('value', $.variable),
+        choice(
+          field('value', $.variable),
+          seq(field('key', $.variable), repeat1(seq(',', field('value', $.variable)))),
+        ),
         'in',
         $._value,
+        repeat(seq(optional(','), $._value)),
         $.block,
       ),
 
@@ -222,20 +227,38 @@ export default grammar(CSS, {
         $.variable,
         'from',
         field('from', $._value),
-        'through',
-        field('through', $._value),
+        choice(seq('through', field('through', $._value)), seq('to', field('to', $._value))),
         $.block,
       ),
 
     while_statement: ($) => seq('@while', $._value, $.block),
 
+    arguments: ($) =>
+      seq(
+        token.immediate('('),
+        sep(
+          choice(',', ';'),
+          seq(optional(seq(field('name', $.variable), ':')), repeat1($._value), optional('...')),
+        ),
+        ')',
+      ),
+
     call_expression: ($) =>
       seq(alias(choice($.identifier, $.plain_value), $.function_name), $.arguments),
 
+    // Operator precedence follows Sass: unary, then multiplication and division, then addition and
+    // subtraction, relational, equality, `and`, and `or`.
     binary_expression: ($) =>
-      prec.left(
-        seq($._value, choice('+', '-', '*', '/', '==', '<', '>', '!=', '<=', '>='), $._value),
+      choice(
+        prec.left(7, seq($._value, choice('*', '/'), $._value)),
+        prec.left(6, seq($._value, choice('+', '-'), $._value)),
+        prec.left(5, seq($._value, choice('<', '>', '<=', '>='), $._value)),
+        prec.left(4, seq($._value, choice('==', '!='), $._value)),
+        prec.left(3, seq($._value, 'and', $._value)),
+        prec.left(2, seq($._value, 'or', $._value)),
       ),
+
+    unary_expression: ($) => prec(8, seq('not', $._value)),
 
     list_value: ($) => seq('(', sep2(',', $._value), ')'),
 
@@ -294,4 +317,17 @@ function sep1(separator, rule) {
  */
 function sep2(separator, rules) {
   return seq(rules, repeat1(seq(separator, rules)));
+}
+
+/**
+ * Creates a rule to optionally match one or more of the rules separated by `separator`
+ *
+ * @param {RuleOrLiteral} separator
+ *
+ * @param {RuleOrLiteral} rule
+ *
+ * @return {ChoiceRule}
+ */
+function sep(separator, rule) {
+  return optional(sep1(separator, rule));
 }

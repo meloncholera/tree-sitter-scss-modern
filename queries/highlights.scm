@@ -20,9 +20,16 @@
   "with"
   "show"
   "hide"
+  "using"
 ] @keyword.import
 
 (flag) @keyword
+
+[
+  "and"
+  "or"
+  "not"
+] @keyword.operator
 
 [
   "@while"
@@ -30,6 +37,7 @@
   "@for"
   "from"
   "through"
+  "to"
   "in"
 ] @keyword.repeat
 
