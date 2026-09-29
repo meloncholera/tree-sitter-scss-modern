@@ -16,6 +16,8 @@ const treeSitterDslGlobals = {
   field: 'readonly',
   alias: 'readonly',
   token: 'readonly',
+  blank: 'readonly',
+  reserved: 'readonly',
 };
 
 export default [
@@ -33,9 +35,6 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: treeSitterDslGlobals,
-    },
-    rules: {
-      'no-useless-escape': 'off',
     },
   },
   {
