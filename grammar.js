@@ -228,6 +228,7 @@ export default grammar(CSS, {
         field('key', choice(alias($._map_key, $.plain_value), $._value)),
         ':',
         repeat1(field('value', $._value)),
+        optional($.flag),
       ),
 
     mixin_statement: ($) =>
@@ -341,6 +342,9 @@ export default grammar(CSS, {
       ),
 
     unary_expression: ($) => prec(8, seq('not', $._value)),
+
+    // `@content ($args...)` passes a spread through the base rule for a parenthesized value.
+    parenthesized_value: ($) => seq('(', $._value, optional('...'), ')'),
 
     list_value: ($) => seq('(', sep2(',', $._value), ')'),
 
