@@ -149,6 +149,20 @@ jobs:
       - name: Cache cargo registry and build artifacts
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
+      - name: Install devDependencies
+        # A bare `npm install` here would also run this package's own
+        # "install": "node-gyp-build" lifecycle script and fail without
+        # MSVC; --ignore-scripts installs the declared devDependencies
+        # (tree-sitter-css, eslint, @eslint/js, prettier) without running
+        # any of them. grammar.js imports the base grammar from
+        # tree-sitter-css in node_modules, so this must run before
+        # `tree-sitter generate`.
+        # ESLint's flat config resolves its own imports (@eslint/js) from
+        # this checkout's node_modules, so this step is required — an
+        # npx --package= invocation installs into a separate temporary
+        # cache the config file's own import can't see.
+        run: npm install --ignore-scripts
+
       - name: Regenerate the parser from grammar.js
         run: npx --yes --package=tree-sitter-cli@${{ env.TREE_SITTER_CLI_VERSION }} -- tree-sitter generate
 
@@ -160,17 +174,6 @@ jobs:
           git ls-files --error-unmatch test/node-kinds.txt
           node test/generate-node-kinds.mjs
           git diff --exit-code -- test/node-kinds.txt
-
-      - name: Install lint/format devDependencies
-        # A bare `npm install` here would also run this package's own
-        # "install": "node-gyp-build" lifecycle script and fail without
-        # MSVC; --ignore-scripts installs the declared devDependencies
-        # (eslint, @eslint/js, prettier) without running any of them.
-        # ESLint's flat config resolves its own imports (@eslint/js) from
-        # this checkout's node_modules, so this step is required — an
-        # npx --package= invocation installs into a separate ephemeral
-        # cache the config file's own import can't see.
-        run: npm install --ignore-scripts
 
       - name: Lint the grammar JS
         run: npm run lint

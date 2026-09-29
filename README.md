@@ -15,7 +15,7 @@ cargo add tree-sitter tree-sitter-scss-modern
 
 ```rust
 let mut parser = tree_sitter::Parser::new();
-let language = tree_sitter_scss::LANGUAGE;
+let language = tree_sitter_scss_modern::LANGUAGE;
 parser
     .set_language(&language.into())
     .expect("Error loading current SCSS syntax parser");
