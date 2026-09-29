@@ -16,7 +16,7 @@
 #                      GitHub Packages requires an npm package name
 #                      scoped to the repository owner, so that job publishes
 #                      under @meloncholera/tree-sitter-scss-modern in its own
-#                      ephemeral checkout only — the public npm package stays
+#                      temporary checkout only — the public npm package stays
 #                      unscoped. Prebuilt native addons (Linux/Windows,
 #                      Node-API) are built by the prebuild matrix job and
 #                      published inside the npm and GitHub Packages
@@ -91,6 +91,12 @@ jobs:
       - name: Cache cargo registry and build artifacts
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
+      - name: Install devDependencies
+        # grammar.js imports the base grammar from tree-sitter-css in
+        # node_modules; --ignore-scripts skips the package's own
+        # "install": "node-gyp-build" lifecycle script.
+        run: npm install --ignore-scripts
+
       - name: Regenerate the parser from grammar.js
         run: npx --yes --package=tree-sitter-cli@${{ env.TREE_SITTER_CLI_VERSION }} -- tree-sitter generate
 
@@ -155,7 +161,7 @@ jobs:
       - name: Install dependencies
         # node-addon-api is a runtime dependency binding.gyp resolves at gyp
         # configure time (`require('node-addon-api').targets`); prebuildify
-        # only installs itself into npx's own ephemeral cache, which that
+        # only installs itself into npx's own temporary cache, which that
         # require can't see. --ignore-scripts skips this package's own
         # "install": "node-gyp-build" script, which would otherwise try (and
         # fail, since there's nothing built yet) to load the addon.
@@ -344,7 +350,7 @@ jobs:
           set -euo pipefail
           version="${TAG#v}"
           # GitHub Packages requires the npm package name to be scoped to the
-          # repository owner; this only ever changes this job's own ephemeral
+          # repository owner; this only ever changes this job's own temporary
           # checkout, never the committed package.json.
           npm pkg set "name=@${OWNER}/tree-sitter-scss-modern"
           npm pkg set "version=${version}"

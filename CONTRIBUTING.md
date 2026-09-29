@@ -17,8 +17,7 @@ CC=gcc CXX=g++ npx --yes --package=tree-sitter-cli@0.27.0 -- tree-sitter test
 cargo test
 ```
 
-`test/corpus/` contains tree assertions, including strict CSS behavior for line comments and URL
-forms. Regenerate the node-kind snapshot after a node-kind or field-name change:
+`test/corpus/` contains tree assertions, including the SCSS constructs from the original probe list. Regenerate the node-kind snapshot after a node-kind or field-name change:
 
 ```sh
 node test/generate-node-kinds.mjs
