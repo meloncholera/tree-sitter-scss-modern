@@ -3111,6 +3111,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "flag",
+          "named": true
+        }
+      ]
     }
   },
   {

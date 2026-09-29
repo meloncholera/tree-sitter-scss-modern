@@ -1,0 +1,156 @@
+// Current Sass syntax: module system, maps, control flow, mixins, and modern at-rules.
+@use 'sass:math';
+@use 'sass:map';
+@use './theme' as t with ($primary: #1b5e20, $radius: 4px);
+@use './helpers' as *;
+@forward './tokens' as token-* show $spacing, spacing;
+@forward './legacy' hide legacy-mixin with ($enabled: false !default);
+
+$breakpoints: (
+  small: 576px,
+  medium: 768px,
+  large: 992px,
+) !default;
+
+$theme: (
+  colors: (
+    primary: #1b5e20,
+    accent: (
+      light: #a5d6a7,
+      dark: #1b5e20,
+    ),
+  ),
+  'spacing': 8px,
+  $key: 2,
+);
+
+$scale: 1.25 !default;
+$counter: 0 !global;
+
+@function rem($px, $base: 16px) {
+  @return math.div($px, $base) * 1rem;
+}
+
+@function every($values...) {
+  @each $value in $values {
+    @if not $value {
+      @return false;
+    }
+  }
+  @return true;
+}
+
+@mixin respond($name) {
+  @if map.has-key($breakpoints, $name) and $name != 'small' {
+    @media (min-width: map.get($breakpoints, $name)) {
+      @content;
+    }
+  } @else if $name == 'small' or $name == 'tiny' {
+    @content;
+  } @else {
+    @warn 'Unknown breakpoint #{$name}';
+  }
+}
+
+@mixin hover-state($args...) {
+  &:hover,
+  &:focus-visible {
+    @content ($args...);
+  }
+}
+
+@mixin panel($padding: 1rem, $border...) {
+  padding: $padding;
+  font: {
+    family: inherit;
+    size: rem(14px);
+  }
+}
+
+%card-base {
+  border-radius: t.$radius;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+  @extend %card-base;
+  @extend .surface !optional;
+  @include panel(1.5rem);
+  @include hover-state using ($state) {
+    outline: 1px solid $state;
+  }
+
+  --card-gap: #{rem(12px)};
+  --card-#{$scale}-size: calc(100% - #{$counter * 2px});
+  width: calc(100% - #{rem(8px)});
+
+  > .title {
+    font-size: rem(18px);
+  }
+
+  + .card {
+    margin-top: rem(8px);
+  }
+
+  &__body:nth-child(n + 3) {
+    color: map.get($theme, 'colors', 'primary');
+  }
+
+  &--wide {
+    @at-root #{&}-container {
+      display: grid;
+    }
+  }
+
+  @include respond(medium) {
+    display: flex;
+  }
+
+  @media (width <= 768px) {
+    display: block;
+  }
+
+  @media (400px <= width <= 700px) and (orientation: portrait) {
+    display: grid;
+  }
+}
+
+@container sidebar (width >= 320px) {
+  .card {
+    padding: 2rem;
+  }
+}
+
+@for $i from 1 through 3 {
+  .gap-#{$i} {
+    gap: #{$i * 4}px;
+  }
+}
+
+@for $i from 1 to 3 {
+  .inset-#{$i} {
+    inset: #{$i}px;
+  }
+}
+
+@each $name, $glyph, $size in (home, 'H', 12px), (user, 'U', 14px) {
+  .icon-#{$name}::before {
+    content: $glyph;
+    font-size: $size;
+  }
+}
+
+@while $counter < 3 {
+  $counter: $counter + 1 !global;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}

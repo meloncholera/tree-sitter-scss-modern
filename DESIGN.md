@@ -1,6 +1,6 @@
 # tree-sitter-scss design
 
-**Status:** In progress. M0 through M3 are implemented; M4 (corpus pass) and M5 (publish and adopt) remain.
+**Status:** In progress. M0 through M4 are done (zero problem nodes across the real corpus and `examples/*.scss`); M5 (publish and adopt) remains.
 **Date:** 2026-09-24
 **Implementation language:** JavaScript (grammar definition) + C (generated parser and external
 scanner) + Rust and TypeScript bindings, following the shape of the other tree-sitter grammar
@@ -72,6 +72,7 @@ fixes it.
 | M3: `:nth-child(n + 3)` | 1 of 182 (0.5%) | New `nth_expression` token for the `an+b` form |
 | M3: leading combinators (`> td`) | 0 of 182 (0.0%) | The three combinator selectors accept a missing left operand, which removes a zero-width node |
 | M3: no corpus impact | 0 of 182 (0.0%) | `@at-root` block and selector forms, nested properties (a colon followed by whitespace is never a pseudo-class colon), multi-file `@import`, `@include m()`, range values with interpolation |
+| M4: corpus pass | 0 of 182 (0.0%) | No corpus construct is invalid SCSS, so nothing was excluded. Also parses: a `!default` flag inside a `@forward ... with` map, and a spread in `@content ($args...)`. `examples/modern.scss` covers the added syntax so the example parse step in CI gates it |
 
 Constructs that already parse and must keep parsing: `@mixin`/`@function` with default and keyword
 arguments, `@content` with arguments, `@include` with a content block, `@if`/`@else if`/`@else`,

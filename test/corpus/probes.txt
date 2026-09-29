@@ -2080,3 +2080,49 @@ a {
         (identifier)
         (arguments)))))
 
+
+==============================
+Probe: flag inside a forward configuration
+==============================
+
+@forward "library" with ($black: #222 !default, $radius: 2px !default);
+
+---
+
+(stylesheet
+  (forward_statement
+    (string_value)
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (color_value)
+          (flag))
+        (map_pair
+          key: (variable)
+          value: (integer_value
+            (unit))
+          (flag))))))
+
+==============================
+Probe: content with a spread
+==============================
+
+@mixin m($args...) {
+  @content ($args...);
+}
+
+---
+
+(stylesheet
+  (mixin_statement
+    name: (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (postcss_statement
+        (at_keyword)
+        (parenthesized_value
+          (variable))))))
+
