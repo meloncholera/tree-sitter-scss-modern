@@ -16,6 +16,15 @@
 "@include" @keyword.import
 
 [
+  "as"
+  "with"
+  "show"
+  "hide"
+] @keyword.import
+
+(flag) @keyword
+
+[
   "@while"
   "@each"
   "@for"

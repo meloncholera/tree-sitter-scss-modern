@@ -429,3 +429,272 @@ Probe: line comments
         (property_name)
         (plain_value))
       (js_comment))))
+
+==============================
+Probe: use with an alias
+==============================
+
+@use "sass:math" as m;
+@use "./theme" as *;
+
+---
+
+(stylesheet
+  (use_statement
+    (string_value)
+    (as_clause
+      (namespace_name)))
+  (use_statement
+    (string_value)
+    (as_clause)))
+
+==============================
+Probe: use with configuration
+==============================
+
+@use "library" with ($black: #222, $border-radius: 0.1rem);
+
+---
+
+(stylesheet
+  (use_statement
+    (string_value)
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (color_value))
+        (map_pair
+          key: (variable)
+          value: (float_value
+            (unit)))))))
+
+==============================
+Probe: use with alias and configuration
+==============================
+
+@use "library" as lib with ($a: 1);
+
+---
+
+(stylesheet
+  (use_statement
+    (string_value)
+    (as_clause
+      (namespace_name))
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (integer_value))))))
+
+==============================
+Probe: forward with show and hide
+==============================
+
+@forward "src/list" hide list-reset, $horizontal-list-gap;
+@forward "src/list" show list-reset, $horizontal-list-gap;
+
+---
+
+(stylesheet
+  (forward_statement
+    (string_value)
+    (hide_clause
+      (identifier)
+      (variable)))
+  (forward_statement
+    (string_value)
+    (show_clause
+      (identifier)
+      (variable))))
+
+==============================
+Probe: forward with a prefix
+==============================
+
+@forward "library" as btn-*;
+@forward "library" as btn-* show a, b with ($c: 1);
+
+---
+
+(stylesheet
+  (forward_statement
+    (string_value)
+    (as_clause
+      (namespace_name)))
+  (forward_statement
+    (string_value)
+    (as_clause
+      (namespace_name))
+    (show_clause
+      (identifier)
+      (identifier))
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (integer_value))))))
+
+==============================
+Probe: variable flags
+==============================
+
+$primary: blue !default;
+$scope: 1 !global;
+$both: 2 !default !global;
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (plain_value)
+    (flag))
+  (declaration
+    (property_name)
+    (integer_value)
+    (flag))
+  (declaration
+    (property_name)
+    (integer_value)
+    (flag)
+    (flag)))
+
+==============================
+Probe: variable flag on a last declaration
+==============================
+
+a {
+  $x: 1 !default
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (integer_value)
+        (flag)))))
+
+==============================
+Probe: flat map
+==============================
+
+$breakpoints: (small: 576px, medium: 768px, large: 992px);
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (map_value
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit)))
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit)))
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit))))))
+
+==============================
+Probe: nested map
+==============================
+
+$config: (
+  colors: (primary: #333, secondary: (light: #eee, dark: #111)),
+  "quoted": 1,
+  $key: 2,
+);
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (map_value
+      (map_pair
+        key: (plain_value)
+        value: (map_value
+          (map_pair
+            key: (plain_value)
+            value: (color_value))
+          (map_pair
+            key: (plain_value)
+            value: (map_value
+              (map_pair
+                key: (plain_value)
+                value: (color_value))
+              (map_pair
+                key: (plain_value)
+                value: (color_value))))))
+      (map_pair
+        key: (string_value)
+        value: (integer_value))
+      (map_pair
+        key: (variable)
+        value: (integer_value)))))
+
+==============================
+Probe: map with list values
+==============================
+
+$fonts: (body: 1px solid red, mono: (a, b));
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (map_value
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit))
+        value: (plain_value)
+        value: (plain_value))
+      (map_pair
+        key: (plain_value)
+        value: (list_value
+          (plain_value)
+          (plain_value))))))
+
+==============================
+Probe: parenthesized value is not a map
+==============================
+
+a {
+  width: (1 + 2) * 3;
+  margin: (a, b);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (binary_expression
+          (parenthesized_value
+            (binary_expression
+              (integer_value)
+              (integer_value)))
+          (integer_value)))
+      (declaration
+        (property_name)
+        (list_value
+          (plain_value)
+          (plain_value))))))
+

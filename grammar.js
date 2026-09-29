@@ -12,7 +12,7 @@ import CSS from 'tree-sitter-css/grammar.js';
 export default grammar(CSS, {
   name: 'scss',
 
-  externals: ($, original) => original.concat([$._concat]),
+  externals: ($, original) => original.concat([$._concat, $._map_key]),
 
   rules: {
     _top_level_item: ($, original) =>
@@ -86,8 +86,24 @@ export default grammar(CSS, {
         $._value,
         repeat(seq(optional(','), $._value)),
         optional($.important),
+        repeat($.flag),
         ';',
       ),
+
+    last_declaration: ($) =>
+      prec(
+        1,
+        seq(
+          alias(choice($.identifier, $.variable, $._concatenated_identifier), $.property_name),
+          ':',
+          $._value,
+          repeat(seq(optional(','), $._value)),
+          optional($.important),
+          repeat($.flag),
+        ),
+      ),
+
+    flag: (_) => choice('!default', '!global'),
 
     // Media queries
 
@@ -99,12 +115,43 @@ export default grammar(CSS, {
       choice(
         original,
         prec(-1, choice($.nesting_selector, $._concatenated_identifier, $.list_value)),
+        $.map_value,
         $.variable,
       ),
 
-    use_statement: ($) => seq('@use', $._value, ';'),
+    use_statement: ($) =>
+      seq('@use', $._value, optional($.as_clause), optional($.with_clause), ';'),
 
-    forward_statement: ($) => seq('@forward', $._value, ';'),
+    forward_statement: ($) =>
+      seq(
+        '@forward',
+        $._value,
+        optional($.as_clause),
+        optional(choice($.show_clause, $.hide_clause)),
+        optional($.with_clause),
+        ';',
+      ),
+
+    as_clause: ($) =>
+      seq(
+        'as',
+        choice('*', seq(alias($.identifier, $.namespace_name), optional(token.immediate('*')))),
+      ),
+
+    with_clause: ($) => seq('with', $.map_value),
+
+    show_clause: ($) => seq('show', sep1(',', choice($.identifier, $.variable))),
+
+    hide_clause: ($) => seq('hide', sep1(',', choice($.identifier, $.variable))),
+
+    map_value: ($) => seq('(', sep1(',', $.map_pair), optional(','), ')'),
+
+    map_pair: ($) =>
+      seq(
+        field('key', choice(alias($._map_key, $.plain_value), $._value)),
+        ':',
+        repeat1(field('value', $._value)),
+      ),
 
     mixin_statement: ($) =>
       seq('@mixin', field('name', $.identifier), optional($.parameters), $.block),

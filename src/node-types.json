@@ -129,6 +129,10 @@
             "named": true
           },
           {
+            "type": "map_value",
+            "named": true
+          },
+          {
             "type": "nesting_selector",
             "named": true
           },
@@ -229,6 +233,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "namespace_selector",
           "named": true
         },
@@ -274,6 +282,21 @@
         },
         {
           "type": "variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "as_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "namespace_name",
           "named": true
         }
       ]
@@ -329,6 +352,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -549,6 +576,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "namespace_selector",
           "named": true
         },
@@ -645,6 +676,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -877,6 +912,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -1121,6 +1160,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -1164,6 +1207,10 @@
           "named": true
         },
         {
+          "type": "flag",
+          "named": true
+        },
+        {
           "type": "float_value",
           "named": true
         },
@@ -1189,6 +1236,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -1363,6 +1414,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -1449,6 +1504,10 @@
             "named": true
           },
           {
+            "type": "map_value",
+            "named": true
+          },
+          {
             "type": "nesting_selector",
             "named": true
           },
@@ -1531,6 +1590,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -1603,6 +1666,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -1681,6 +1748,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -1702,6 +1773,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "flag",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "float_value",
@@ -1764,6 +1840,10 @@
           },
           {
             "type": "list_value",
+            "named": true
+          },
+          {
+            "type": "map_value",
             "named": true
           },
           {
@@ -1833,6 +1913,10 @@
             "named": true
           },
           {
+            "type": "map_value",
+            "named": true
+          },
+          {
             "type": "nesting_selector",
             "named": true
           },
@@ -1879,6 +1963,10 @@
       "required": true,
       "types": [
         {
+          "type": "as_clause",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -1896,6 +1984,10 @@
         },
         {
           "type": "grid_value",
+          "named": true
+        },
+        {
+          "type": "hide_clause",
           "named": true
         },
         {
@@ -1919,6 +2011,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -1931,11 +2027,19 @@
           "named": true
         },
         {
+          "type": "show_clause",
+          "named": true
+        },
+        {
           "type": "string_value",
           "named": true
         },
         {
           "type": "variable",
+          "named": true
+        },
+        {
+          "type": "with_clause",
           "named": true
         }
       ]
@@ -2025,6 +2129,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -2038,6 +2146,25 @@
         },
         {
           "type": "string_value",
+          "named": true
+        },
+        {
+          "type": "variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "hide_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
           "named": true
         },
         {
@@ -2171,6 +2298,10 @@
             "named": true
           },
           {
+            "type": "map_value",
+            "named": true
+          },
+          {
             "type": "nesting_selector",
             "named": true
           },
@@ -2270,6 +2401,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -2391,6 +2526,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -2530,6 +2669,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -2547,6 +2690,167 @@
         },
         {
           "type": "variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "map_pair",
+    "named": true,
+    "fields": {
+      "key": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "color_value",
+            "named": true
+          },
+          {
+            "type": "float_value",
+            "named": true
+          },
+          {
+            "type": "grid_value",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "important",
+            "named": true
+          },
+          {
+            "type": "integer_value",
+            "named": true
+          },
+          {
+            "type": "interpolation",
+            "named": true
+          },
+          {
+            "type": "list_value",
+            "named": true
+          },
+          {
+            "type": "map_value",
+            "named": true
+          },
+          {
+            "type": "nesting_selector",
+            "named": true
+          },
+          {
+            "type": "parenthesized_value",
+            "named": true
+          },
+          {
+            "type": "plain_value",
+            "named": true
+          },
+          {
+            "type": "string_value",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "color_value",
+            "named": true
+          },
+          {
+            "type": "float_value",
+            "named": true
+          },
+          {
+            "type": "grid_value",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "important",
+            "named": true
+          },
+          {
+            "type": "integer_value",
+            "named": true
+          },
+          {
+            "type": "interpolation",
+            "named": true
+          },
+          {
+            "type": "list_value",
+            "named": true
+          },
+          {
+            "type": "map_value",
+            "named": true
+          },
+          {
+            "type": "nesting_selector",
+            "named": true
+          },
+          {
+            "type": "parenthesized_value",
+            "named": true
+          },
+          {
+            "type": "plain_value",
+            "named": true
+          },
+          {
+            "type": "string_value",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "map_value",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "map_pair",
           "named": true
         }
       ]
@@ -2768,6 +3072,10 @@
             "named": true
           },
           {
+            "type": "map_value",
+            "named": true
+          },
+          {
             "type": "nesting_selector",
             "named": true
           },
@@ -2904,6 +3212,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -2991,6 +3303,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -3238,6 +3554,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -3416,6 +3736,25 @@
         },
         {
           "type": "universal_selector",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "show_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "variable",
           "named": true
         }
       ]
@@ -3724,6 +4063,10 @@
       "required": true,
       "types": [
         {
+          "type": "as_clause",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -3764,6 +4107,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -3781,6 +4128,10 @@
         },
         {
           "type": "variable",
+          "named": true
+        },
+        {
+          "type": "with_clause",
           "named": true
         }
       ]
@@ -3832,6 +4183,10 @@
         },
         {
           "type": "list_value",
+          "named": true
+        },
+        {
+          "type": "map_value",
           "named": true
         },
         {
@@ -3910,6 +4265,10 @@
           "named": true
         },
         {
+          "type": "map_value",
+          "named": true
+        },
+        {
           "type": "nesting_selector",
           "named": true
         },
@@ -3933,7 +4292,30 @@
     }
   },
   {
+    "type": "with_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "map_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "!=",
+    "named": false
+  },
+  {
+    "type": "!default",
+    "named": false
+  },
+  {
+    "type": "!global",
     "named": false
   },
   {
@@ -4137,6 +4519,10 @@
     "named": false
   },
   {
+    "type": "as",
+    "named": false
+  },
+  {
     "type": "at_keyword",
     "named": true
   },
@@ -4156,6 +4542,10 @@
   {
     "type": "function_name",
     "named": true
+  },
+  {
+    "type": "hide",
+    "named": false
   },
   {
     "type": "id_name",
@@ -4219,6 +4609,10 @@
     "named": false
   },
   {
+    "type": "show",
+    "named": false
+  },
+  {
     "type": "through",
     "named": false
   },
@@ -4233,6 +4627,10 @@
   {
     "type": "variable",
     "named": true
+  },
+  {
+    "type": "with",
+    "named": false
   },
   {
     "type": "{",
