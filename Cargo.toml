@@ -1,23 +1,27 @@
 [package]
-name = "tree-sitter-scss"
-description = "SCSS grammar for tree-sitter"
-version = "1.0.0"
-authors = ["Amaan Qureshi <amaanq12@gmail.com>"]
+name = "tree-sitter-scss-modern"
+description = "Tree-sitter grammar for current SCSS syntax (module system, maps, control flow)"
+version = "0.1.0"
+authors = ["Amaan Qureshi", "M. Reifschneider"]
 license = "MIT"
+readme = "README.md"
 keywords = ["incremental", "parsing", "tree-sitter", "scss"]
 categories = ["parsing", "text-editors"]
-repository = "https://github.com/tree-sitter-grammars/tree-sitter-scss"
-edition = "2021"
+repository = "https://github.com/meloncholera/tree-sitter-scss-modern.git"
+edition = "2024"
 autoexamples = false
 
 build = "bindings/rust/build.rs"
-include = ["bindings/rust/*", "grammar.js", "queries/*", "src/*"]
+include = ["/LICENSE", "/NOTICE", "/README.md", "/tree-sitter.json", "/bindings/rust/*", "/grammar.js", "/queries/*", "/src/**"]
 
 [lib]
 path = "bindings/rust/lib.rs"
 
 [dependencies]
-tree-sitter = ">=0.21.0"
+tree-sitter-language = "0.1"
 
 [build-dependencies]
-cc = "1.0.92"
+cc = "~1.4.4"
+
+[dev-dependencies]
+tree-sitter = "~0.27.0"

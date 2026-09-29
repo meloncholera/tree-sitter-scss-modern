@@ -1,0 +1,6 @@
+tree-sitter-scss-modern is a fork of tree-sitter-scss
+(https://github.com/tree-sitter-grammars/tree-sitter-scss), copyright (c) 2024 Amaan Qureshi,
+licensed under the MIT License. See LICENSE for the full license text.
+
+The grammar, scanner, queries, and test corpus derive from that project, which extends the
+tree-sitter-css grammar (https://github.com/tree-sitter/tree-sitter-css, MIT).

@@ -1,104 +1,75 @@
 {
-  "name": "tree-sitter-scss",
-  "version": "1.0.0",
-  "description": "SCSS grammar for tree-sitter",
-  "repository": "github:tree-sitter-grammars/tree-sitter-scss",
-  "license": "MIT",
-  "author": "Amaan Qureshi <amaanq12@gmail.com>",
+  "name": "tree-sitter-scss-modern",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for current SCSS syntax (module system, maps, control flow)",
   "main": "bindings/node",
   "types": "bindings/node",
-  "keywords": [
-    "incremental",
-    "parsing",
-    "tree-sitter",
-    "scss"
+  "scripts": {
+    "install": "node-gyp-build",
+    "prestart": "npx --yes --package=tree-sitter-cli@0.27.0 -- tree-sitter build --wasm",
+    "start": "npx --yes --package=tree-sitter-cli@0.27.0 -- tree-sitter playground",
+    "test": "node --test bindings/node/*_test.js",
+    "lint": "eslint grammar.js \"test/*.mjs\" \"bindings/node/*.js\"",
+    "format": "prettier --write grammar.js \"test/*.mjs\" \"bindings/node/*.js\"",
+    "format:check": "prettier --check grammar.js \"test/*.mjs\" \"bindings/node/*.js\""
+  },
+  "author": "M. Reifschneider",
+  "contributors": [
+    "Amaan Qureshi"
   ],
-  "files": [
-    "grammar.js",
-    "binding.gyp",
-    "prebuilds/**",
-    "bindings/node/*",
-    "queries/*",
-    "src/**"
-  ],
+  "license": "MIT",
   "dependencies": {
-    "node-addon-api": "^8.0.0",
-    "node-gyp-build": "^4.8.0",
-    "tree-sitter-css": "^0.20.0"
+    "node-addon-api": "8.9.2",
+    "node-gyp-build": "4.8.4"
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-google": "^0.14.0",
-    "prebuildify": "^6.0.0",
-    "tree-sitter-cli": "^0.22.2"
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "node-gyp": "13.0.2",
+    "prettier": "3.9.9",
+    "tree-sitter": "0.25.1",
+    "tree-sitter-css": "0.20.0"
   },
   "peerDependencies": {
-    "tree-sitter": "^0.21.0"
+    "tree-sitter": "^0.25.0"
   },
   "peerDependenciesMeta": {
     "tree-sitter": {
       "optional": true
     }
   },
-  "scripts": {
-    "install": "node-gyp-build",
-    "prebuildify": "prebuildify --napi --strip",
-    "build": "tree-sitter generate --no-bindings",
-    "build-wasm": "tree-sitter build --wasm",
-    "lint": "eslint grammar.js",
-    "parse": "tree-sitter parse",
-    "test": "tree-sitter test"
+  "gypfile": true,
+  "directories": {
+    "test": "test"
   },
-  "tree-sitter": [
-    {
-      "scope": "source.scss",
-      "file-types": [
-        "scss"
-      ],
-      "injection-regex": "^scss$",
-      "highlights": "queries/highlights.scm"
-    }
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meloncholera/tree-sitter-scss-modern.git"
+  },
+  "bugs": {
+    "url": "https://github.com/meloncholera/tree-sitter-scss-modern/issues"
+  },
+  "homepage": "https://github.com/meloncholera/tree-sitter-scss-modern#readme",
+  "keywords": [
+    "parser",
+    "tree-sitter",
+    "scss",
+    "sass",
+    "css"
   ],
-  "eslintConfig": {
-    "env": {
-      "commonjs": true,
-      "es2021": true
-    },
-    "extends": "google",
-    "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
-    },
-    "rules": {
-      "arrow-parens": "off",
-      "camel-case": "off",
-      "indent": [
-        "error",
-        2,
-        {
-          "SwitchCase": 1
-        }
-      ],
-      "max-len": [
-        "error",
-        {
-          "code": 160,
-          "ignoreComments": true,
-          "ignoreUrls": true,
-          "ignoreStrings": true
-        }
-      ],
-      "spaced-comment": [
-        "warn",
-        "always",
-        {
-          "line": {
-            "markers": [
-              "/"
-            ]
-          }
-        }
-      ]
-    }
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "bindings/node/*",
+    "queries/*",
+    "src/**",
+    "prebuilds/**",
+    "tree-sitter.json",
+    "NOTICE"
+  ],
+  "allowScripts": {
+    "tree-sitter-cli@0.27.0": true,
+    "tree-sitter@0.25.1": true
   }
 }

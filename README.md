@@ -1,17 +1,60 @@
-# tree-sitter-scss
+# tree-sitter-scss-modern
 
-[![CI][ci]](https://github.com/tree-sitter-grammars/tree-sitter-scss/actions/workflows/ci.yml)
-[![discord][discord]](https://discord.gg/w7nTvsVJhm)
-[![matrix][matrix]](https://matrix.to/#/#tree-sitter-chat:matrix.org)
-[![crates][crates]](https://crates.io/crates/tree-sitter-scss)
-[![npm][npm]](https://www.npmjs.com/package/tree-sitter-scss)
-[![pypi][pypi]](https://pypi.org/project/tree-sitter-scss)
+A [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for current SCSS syntax.
 
-[SCSS](https://sass-lang.com/documentation) grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter).
+This project is a maintained fork of
+[`tree-sitter-grammars/tree-sitter-scss`](https://github.com/tree-sitter-grammars/tree-sitter-scss), licensed
+under MIT. It adds the Sass module system (`@use` and `@forward` options), maps, variable flags, boolean
+operators, and other current syntax the original does not parse, keeping the original's node kinds.
 
-[ci]: https://img.shields.io/github/actions/workflow/status/tree-sitter-grammars/tree-sitter-scss/ci.yml?logo=github&label=CI
-[discord]: https://img.shields.io/discord/1063097320771698699?logo=discord&label=discord
-[matrix]: https://img.shields.io/matrix/tree-sitter-chat%3Amatrix.org?logo=matrix&label=matrix
-[npm]: https://img.shields.io/npm/v/tree-sitter-scss?logo=npm
-[crates]: https://img.shields.io/crates/v/tree-sitter-scss?logo=rust
-[pypi]: https://img.shields.io/pypi/v/tree-sitter-scss?logo=pypi&logoColor=ffd242
+## Using it
+
+```sh
+cargo add tree-sitter tree-sitter-scss-modern
+```
+
+```rust
+let mut parser = tree_sitter::Parser::new();
+let language = tree_sitter_scss::LANGUAGE;
+parser
+    .set_language(&language.into())
+    .expect("Error loading current SCSS syntax parser");
+```
+
+```sh
+npm install tree-sitter-scss-modern
+```
+
+```js
+import Parser from 'tree-sitter';
+import Language from 'tree-sitter-scss-modern';
+
+const parser = new Parser();
+parser.setLanguage(Language);
+```
+
+A GitHub Packages copy is also published as `@meloncholera/tree-sitter-scss-modern`.
+
+## Building
+
+```sh
+npm install --ignore-scripts
+npx --yes --package=tree-sitter-cli@0.27.0 -- tree-sitter generate
+cargo build
+```
+
+The generated parser (`src/parser.c`, `src/grammar.json`, and `src/node-types.json`) is committed.
+Regenerate and commit the diff after every `grammar.js` change.
+
+## Testing
+
+```sh
+CC=gcc CXX=g++ npx --yes --package=tree-sitter-cli@0.27.0 -- tree-sitter test
+cargo test
+```
+
+On Windows without MSVC, set `CC` and `CXX` to an installed GCC-compatible toolchain.
+
+## License
+
+MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

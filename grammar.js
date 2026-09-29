@@ -7,9 +7,9 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-const CSS = require('tree-sitter-css/grammar');
+import CSS from 'tree-sitter-css/grammar.js';
 
-module.exports = grammar(CSS, {
+export default grammar(CSS, {
   name: 'scss',
 
   externals: ($, original) => original.concat([
