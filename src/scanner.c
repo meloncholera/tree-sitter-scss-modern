@@ -24,6 +24,20 @@ unsigned tree_sitter_scss_external_scanner_serialize(void *payload, char *buffer
 
 void tree_sitter_scss_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {}
 
+// Advances past an interpolation body: the lookahead is the opening brace, and on return it is the
+// character after the matching closing brace.
+static void skip_interpolation(TSLexer *lexer) {
+    int depth = 0;
+    do {
+        if (lexer->lookahead == '{') {
+            depth++;
+        } else if (lexer->lookahead == '}') {
+            depth--;
+        }
+        advance(lexer);
+    } while (depth > 0 && !lexer->eof(lexer));
+}
+
 // Scans a bare-word map key: identifier characters followed, after optional whitespace, by a single
 // colon. The token ends before the colon. The base grammar's plain value token would otherwise
 // swallow the colon (`key:` is a valid plain value), so the key has to be recognized here.
@@ -109,13 +123,24 @@ bool tree_sitter_scss_external_scanner_scan(void *payload, TSLexer *lexer, const
             if (lexer->lookahead == ':') {
                 return false;
             }
+            // Whitespace after the colon means a declaration: `font: { family: x; }` is a nested
+            // property block, not a pseudo class selector.
+            if (iswspace(lexer->lookahead)) {
+                return false;
+            }
             lexer->mark_end(lexer);
-            // We need a { to be a pseudo class selector, a ; indicates a property
+            // We need a { to be a pseudo class selector, a ; indicates a property. A { that opens
+            // an interpolation (#{...}) is part of a value and is skipped.
+            int32_t previous = ':';
             while (lexer->lookahead != ';' && lexer->lookahead != '}' && !lexer->eof(lexer)) {
+                previous = lexer->lookahead;
                 advance(lexer);
                 if (lexer->lookahead == '{') {
-                    lexer->result_symbol = PSEUDO_CLASS_SELECTOR_COLON;
-                    return true;
+                    if (previous != '#') {
+                        lexer->result_symbol = PSEUDO_CLASS_SELECTOR_COLON;
+                        return true;
+                    }
+                    skip_interpolation(lexer);
                 }
             }
             return false;
