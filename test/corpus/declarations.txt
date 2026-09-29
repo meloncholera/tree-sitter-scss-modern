@@ -192,25 +192,25 @@ a {
           (function_name)
           (arguments
             (binary_expression
+              (integer_value
+                (unit))
               (binary_expression
-                (integer_value
-                  (unit))
                 (parenthesized_value
                   (binary_expression
                     (integer_value)
-                    (integer_value))))
-              (parenthesized_value
-                (binary_expression
-                  (parenthesized_value
-                    (binary_expression
-                      (integer_value
-                        (unit))
-                      (integer_value
-                        (unit))))
-                  (parenthesized_value
-                    (binary_expression
-                      (integer_value)
-                      (integer_value))))))))))))
+                    (integer_value)))
+                (parenthesized_value
+                  (binary_expression
+                    (parenthesized_value
+                      (binary_expression
+                        (integer_value
+                          (unit))
+                        (integer_value
+                          (unit))))
+                    (parenthesized_value
+                      (binary_expression
+                        (integer_value)
+                        (integer_value)))))))))))))
 
 ============================
 Strings

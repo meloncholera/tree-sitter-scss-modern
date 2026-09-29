@@ -698,3 +698,606 @@ a {
           (plain_value)
           (plain_value))))))
 
+
+==============================
+Probe: not in an if condition
+==============================
+
+@if not $enabled {
+  a: b;
+}
+@else if not index($list, 1) {
+  c: d;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (unary_expression
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))
+    (else_if_clause
+      condition: (unary_expression
+        (call_expression
+          (function_name)
+          (arguments
+            (variable)
+            (integer_value))))
+      (block
+        (declaration
+          (property_name)
+          (plain_value))))))
+
+==============================
+Probe: and and or in an if condition
+==============================
+
+@if $a == 1 and $b == 2 or $c {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (binary_expression
+          (variable)
+          (integer_value))
+        (binary_expression
+          (variable)
+          (integer_value)))
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence not then and
+==============================
+
+@if not $a and $b {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (unary_expression
+        (variable))
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence and then or
+==============================
+
+@if $a and $b or $c {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (variable))
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence or then and
+==============================
+
+@if $a or $b and $c {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (variable)
+      (binary_expression
+        (variable)
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence equality then and
+==============================
+
+@if $a == 1 and $b != 2 {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (integer_value))
+      (binary_expression
+        (variable)
+        (integer_value)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence relational then equality
+==============================
+
+@if $a < 1 == $b > 2 {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (integer_value))
+      (binary_expression
+        (variable)
+        (integer_value)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence addition then relational
+==============================
+
+@if $a + 1 > $b - 2 {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (integer_value))
+      (binary_expression
+        (variable)
+        (integer_value)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence multiplication then addition
+==============================
+
+a {
+  width: $a + $b * $c - $d / 2;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (binary_expression
+          (binary_expression
+            (variable)
+            (binary_expression
+              (variable)
+              (variable)))
+          (binary_expression
+            (variable)
+            (integer_value)))))))
+
+==============================
+Probe: parenthesized boolean
+==============================
+
+@if ($a == 1) and ($b or not $c) {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (parenthesized_value
+        (binary_expression
+          (variable)
+          (integer_value)))
+      (parenthesized_value
+        (binary_expression
+          (variable)
+          (unary_expression
+            (variable)))))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: while with not
+==============================
+
+@while not $done {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (while_statement
+    (unary_expression
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: return with boolean operators
+==============================
+
+@function both($a, $b) {
+  @return $a and $b;
+}
+
+---
+
+(stylesheet
+  (function_statement
+    name: (identifier)
+    (parameters
+      (parameter
+        (variable))
+      (parameter
+        (variable)))
+    (block
+      (return_statement
+        (binary_expression
+          (variable)
+          (variable))))))
+
+==============================
+Probe: for to
+==============================
+
+@for $i from 1 to 3 {
+  .item-#{$i} {
+    width: 2em * $i;
+  }
+}
+
+---
+
+(stylesheet
+  (for_statement
+    (variable)
+    from: (integer_value)
+    to: (integer_value)
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (identifier)
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (binary_expression
+              (integer_value
+                (unit))
+              (variable))))))))
+
+==============================
+Probe: each with three variables
+==============================
+
+@each $name, $glyph, $size in (a, b, 1), (c, d, 2) {
+  .icon-#{$name} {
+    content: $glyph;
+  }
+}
+
+---
+
+(stylesheet
+  (each_statement
+    key: (variable)
+    value: (variable)
+    value: (variable)
+    (list_value
+      (plain_value)
+      (plain_value)
+      (integer_value))
+    (list_value
+      (plain_value)
+      (plain_value)
+      (integer_value))
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (identifier)
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (variable)))))))
+
+==============================
+Probe: each with a single variable
+==============================
+
+@each $name in a, b, c {
+  .#{$name} {
+    a: b;
+  }
+}
+
+---
+
+(stylesheet
+  (each_statement
+    value: (variable)
+    (plain_value)
+    (plain_value)
+    (plain_value)
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: mixin with rest arguments
+==============================
+
+@mixin transition($args...) {
+  transition: $args;
+}
+
+---
+
+(stylesheet
+  (mixin_statement
+    name: (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (variable)))))
+
+==============================
+Probe: include with spread arguments
+==============================
+
+a {
+  @include transition($values...);
+  @include button($size, $rest...);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            value: (variable))))
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            value: (variable))
+          (argument
+            value: (variable)))))))
+
+==============================
+Probe: include with using
+==============================
+
+@include media-hover using ($state) {
+  color: $state;
+}
+@include foo(1, 2) using ($a, $b) {
+  x: $a;
+}
+
+---
+
+(stylesheet
+  (include_statement
+    (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (variable))))
+  (include_statement
+    (identifier)
+    (arguments
+      (argument
+        value: (integer_value))
+      (argument
+        value: (integer_value)))
+    (parameters
+      (parameter
+        (variable))
+      (parameter
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (variable)))))
+
+==============================
+Probe: module qualified include
+==============================
+
+a {
+  @include mat.button-theme($theme);
+  @include mat.core;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            value: (variable))))
+      (include_statement
+        (identifier)))))
+
+
+==============================
+Probe: call with a spread argument
+==============================
+
+a {
+  n: fn($a, $rest...);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (variable)
+            (variable)))))))
+
+==============================
+Probe: call with keyword arguments
+==============================
+
+a {
+  o: color.adjust($c, $lightness: -10%, $alpha: 0.5);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (variable)
+            name: (variable)
+            (integer_value
+              (unit))
+            name: (variable)
+            (float_value)))))))
+
+==============================
+Probe: not, and, and or remain valid identifiers
+==============================
+
+a:not(.b) {
+  and: 1;
+  or: 2;
+}
+.and, .or, .not {
+  x: y;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (pseudo_class_selector
+        (tag_name)
+        (class_name)
+        (arguments
+          (class_selector
+            (class_name)))))
+    (block
+      (declaration
+        (property_name)
+        (integer_value))
+      (declaration
+        (property_name)
+        (integer_value))))
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name))
+      (class_selector
+        (class_name))
+      (class_selector
+        (class_name)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
