@@ -30,6 +30,7 @@ export default grammar(CSS, {
         $.warn_statement,
         $.debug_statement,
         $.at_root_statement,
+        $.container_statement,
         $.if_statement,
         $.each_statement,
         $.for_statement,
@@ -39,6 +40,7 @@ export default grammar(CSS, {
     _block_item: ($, original) =>
       choice(
         original,
+        $.nested_declaration,
         $.mixin_statement,
         $.include_statement,
         $.function_statement,
@@ -48,6 +50,7 @@ export default grammar(CSS, {
         $.warn_statement,
         $.debug_statement,
         $.at_root_statement,
+        $.container_statement,
         $.if_statement,
         $.each_statement,
         $.for_statement,
@@ -57,7 +60,7 @@ export default grammar(CSS, {
     // Selectors
 
     _selector: ($, original) =>
-      choice(original, alias($._concatenated_identifier, $.tag_name), $.placeholder),
+      choice(original, prec(-2, alias($._concatenated_identifier, $.tag_name)), $.placeholder),
 
     class_selector: ($) =>
       prec(
@@ -76,6 +79,25 @@ export default grammar(CSS, {
         alias(choice($.identifier, $._concatenated_identifier), $.class_name),
         optional(alias($.pseudo_class_arguments, $.arguments)),
       ),
+
+    // A combinator may start a nested selector (`> td`, `+ .a`, `~ .b`); the parent selector is
+    // implied, so the left operand is optional.
+    child_selector: ($) => prec.left(seq(optional($._selector), '>', $._selector)),
+
+    sibling_selector: ($) => prec.left(seq(optional($._selector), '~', $._selector)),
+
+    adjacent_sibling_selector: ($) => prec.left(seq(optional($._selector), '+', $._selector)),
+
+    pseudo_class_arguments: ($) =>
+      seq(
+        token.immediate('('),
+        sep(',', choice($.nth_expression, $._selector, repeat1($._value))),
+        ')',
+      ),
+
+    // The `an+b` form of `:nth-child()` and friends. A bare `n`, `2n`, or `odd` is not matched
+    // here and keeps parsing as an ordinary word or number.
+    nth_expression: (_) => token(/[-+]?[0-9]*[nN]\s*[-+]\s*[0-9]+/),
 
     // Declarations
 
@@ -103,11 +125,65 @@ export default grammar(CSS, {
         ),
       ),
 
-    flag: (_) => choice('!default', '!global'),
+    container_statement: ($) =>
+      seq('@container', optional(alias($.identifier, $.container_name)), $._query, $.block),
+
+    // Nested properties: `font: { family: x; }` and `font: bold { family: x; }`.
+    nested_declaration: ($) =>
+      seq(
+        alias(choice($.identifier, $._concatenated_identifier), $.property_name),
+        ':',
+        optional(seq($._value, repeat(seq(optional(','), $._value)))),
+        $.block,
+      ),
+
+    flag: (_) => choice('!default', '!global', '!optional'),
+
+    keyframe_block: ($) =>
+      seq(sep1(',', choice($.from, $.to, $.integer_value, $.float_value)), $.block),
+
+    // The base token lets `#` continue a word, so `--a-#{$b}` would swallow the `#` of an
+    // interpolation. Here a `#` continues a word only when it is not followed by `{`.
+    plain_value: (_) =>
+      token(
+        seq(
+          repeat(choice(/[-_]/, /\/[^\*\s,;!{}()\[\]]/)),
+          /[a-zA-Z]/,
+          repeat(choice(/[^/\s,;!{}()\[\]#]/, /\/[^\*\s,;!{}()\[\]]/, /#[^{/\s,;!}()\[\]]/)),
+        ),
+      ),
+
+    import_statement: ($) =>
+      seq('@import', $._value, repeat(seq(',', $.string_value)), sep(',', $._query), ';'),
 
     // Media queries
 
-    _query: ($, original) => choice(original, prec(-1, $.interpolation)),
+    _query: ($, original) => choice(original, prec(-1, $.interpolation), $.range_query),
+
+    // A range media or container feature such as `(width <= 768px)` or `(400px <= width <= 700px)`.
+    range_query: ($) =>
+      seq(
+        '(',
+        choice(
+          seq($._range_value, $._range_operator, alias($.identifier, $.feature_name)),
+          seq(alias($.identifier, $.feature_name), $._range_operator, $._range_value),
+          seq(
+            $._range_value,
+            $._range_operator,
+            alias($.identifier, $.feature_name),
+            $._range_operator,
+            $._range_value,
+          ),
+        ),
+        ')',
+      ),
+
+    _range_operator: (_) => choice('<', '<=', '>', '>=', '='),
+
+    // Lower precedence than `_value` so an unknown at-rule followed by a parenthesized comparison
+    // keeps parsing as ordinary values.
+    _range_value: ($) =>
+      prec(-2, choice($.integer_value, $.float_value, $.variable, $.interpolation)),
 
     // Property Values
 
@@ -168,7 +244,7 @@ export default grammar(CSS, {
     _include_arguments: ($) =>
       seq(
         token.immediate('('),
-        sep1(',', alias($._include_argument, $.argument)),
+        sep(',', alias($._include_argument, $.argument)),
         token.immediate(')'),
       ),
 
@@ -185,7 +261,13 @@ export default grammar(CSS, {
 
     return_statement: ($) => seq('@return', $._value, ';'),
 
-    extend_statement: ($) => seq('@extend', choice($._value, $.class_selector), ';'),
+    extend_statement: ($) =>
+      seq(
+        '@extend',
+        sep1(',', choice($._value, $.class_selector, $.placeholder)),
+        optional($.flag),
+        ';',
+      ),
 
     error_statement: ($) => seq('@error', $._value, ';'),
 
@@ -193,7 +275,7 @@ export default grammar(CSS, {
 
     debug_statement: ($) => seq('@debug', $._value, ';'),
 
-    at_root_statement: ($) => seq('@at-root', $._value, $.block),
+    at_root_statement: ($) => seq('@at-root', optional(choice($._value, $.selectors)), $.block),
 
     if_statement: ($) =>
       seq(

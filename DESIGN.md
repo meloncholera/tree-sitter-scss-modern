@@ -1,6 +1,6 @@
 # tree-sitter-scss design
 
-**Status:** In progress. M0 (scaffold, verification, parse-rate script) is done; grammar work follows the milestones below.
+**Status:** In progress. M0 through M3 are implemented; M4 (corpus pass) and M5 (publish and adopt) remain.
 **Date:** 2026-09-24
 **Implementation language:** JavaScript (grammar definition) + C (generated parser and external
 scanner) + Rust and TypeScript bindings, following the shape of the other tree-sitter grammar
@@ -64,6 +64,14 @@ fixes it.
 | Baseline | 51 of 182 (28.0%) | Inherited grammar |
 | M1: module system, flags, maps | 33 of 182 (18.1%) | `@use`/`@forward` clauses, `!default`/`!global`, maps (bare-word keys need an external scanner token because the base plain value token swallows a trailing colon), and a `last_declaration` that accepts variable and interpolated names |
 | M2: control flow and mixins | 33 of 182 (18.1%) | `not`/`and`/`or` with Sass operator precedence, `@for ... to`, multi-variable `@each`, rest and spread arguments, `@include ... using`, keyword arguments in calls. The real corpus uses none of these constructs, so its rate does not move |
+| M3: `@media` range queries (`(width <= 768px)`) | 16 of 182 (8.8%) | New `range_query` in `_query`, so plain CSS gains it too |
+| M3: `@container` | 11 of 182 (6.0%) | New `container_statement` with an optional `container_name` |
+| M3: keyframe selector lists (`0%, 100%`) | 8 of 182 (4.4%) | `keyframe_block` takes a comma-separated list |
+| M3: `@extend %placeholder` and `!optional` | 5 of 182 (2.7%) | `extend_statement` takes placeholders and a trailing `flag` |
+| M3: interpolation in values | 3 of 182 (1.6%) | The scanner's pseudo-class lookahead skips `#{...}` (its brace was read as the start of a block), and `plain_value` no longer swallows the `#` of an interpolation |
+| M3: `:nth-child(n + 3)` | 1 of 182 (0.5%) | New `nth_expression` token for the `an+b` form |
+| M3: leading combinators (`> td`) | 0 of 182 (0.0%) | The three combinator selectors accept a missing left operand, which removes a zero-width node |
+| M3: no corpus impact | 0 of 182 (0.0%) | `@at-root` block and selector forms, nested properties (a colon followed by whitespace is never a pseudo-class colon), multi-file `@import`, `@include m()`, range values with interpolation |
 
 Constructs that already parse and must keep parsing: `@mixin`/`@function` with default and keyword
 arguments, `@content` with arguments, `@include` with a content block, `@if`/`@else if`/`@else`,
@@ -102,6 +110,14 @@ selector lists, `&` suffixes, interpolation in selectors and property names, mod
 6. **M5 — publish and adopt.** A crates.io release under a distinct name, or a Git-revision pin while
    publishing is pending, as `tree-sitter-mulesoft` did. Switch `cadence`'s SCSS profile to it.
 
+## First upstream pull request
+
+The first pull request to `tree-sitter-grammars/tree-sitter-scss` (not opened yet) would contain
+only `@for ... to`: a `to` alternative next to `through` in `for_statement` (the new value is a
+`to` field, so the existing `through` field is untouched), the regenerated `src/parser.c`,
+`src/grammar.json`, and `src/node-types.json`, and a corpus case in `test/corpus/statements.txt`
+covering `@for $i from 1 to 3`. It needs no scanner change and no other rule.
+
 ## Open questions
 
 1. Will upstream review pull requests at a pace that makes a separate repository unnecessary? Try
@@ -110,5 +126,20 @@ selector lists, `&` suffixes, interpolation in selectors and property names, mod
    and npm.
 3. Should the base CSS fixes be shared with the `tree-sitter-css` fork rather than made twice, for
    example by having this grammar extend that fork instead of upstream `tree-sitter-css`?
+
+   Evaluated during M3. `tree-sitter-css-strict` is an ESM `export default grammar({...})` whose
+   `grammar.js` ships in the package, so it can be extended the same way as upstream
+   `tree-sitter-css`; its three external tokens match the base grammar's, so the scanner is
+   unchanged. It drops `//` comments (its `extras` list holds only `comment`); an extension has to
+   add back an `extras` entry and a `js_comment` rule (a few lines). In a scratch copy with that
+   change, the whole real corpus parses with zero problems, and `@scope` parses (it does not with
+   the current base). Unquoted relative `url(../x)` still fails in both, because this grammar's
+   argument and plain value overrides shadow the base handling. The generated parser is about 12
+   percent larger. **Recommendation: stay on upstream `tree-sitter-css` 0.20.0 for now.** The
+   strict fork is at 0.1.0, so this grammar's node kinds would depend on a second in-flux
+   repository, and the corpus already parses cleanly without it. The base rules changed here
+   (`@container`, range queries, keyframe lists, `plain_value`) are overrides in this repository,
+   so nothing is made twice. Revisit when the fork stabilizes: switching is a one-line import plus
+   the `js_comment` extra, and the corpus and probe tests would show any regression.
 4. Which GitHub owner hosts the repository — the personal account like the other grammar
    repositories, or `CF-Martin-co`?

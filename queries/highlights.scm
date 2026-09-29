@@ -1,5 +1,6 @@
 [
   "@at-root"
+  "@container"
   "@debug"
   "@error"
   "@extend"
