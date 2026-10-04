@@ -1,0 +1,2128 @@
+==============================
+Probe: mixin with default and keyword arguments
+==============================
+
+@mixin button($bg: blue, $fg: white) {
+  background: $bg;
+  color: $fg;
+}
+
+.a {
+  @include button($fg: black, $bg: red);
+}
+
+---
+
+(stylesheet
+  (mixin_statement
+    (identifier)
+    (parameters
+      (parameter
+        (variable)
+        (plain_value))
+      (parameter
+        (variable)
+        (plain_value)))
+    (block
+      (declaration
+        (property_name)
+        (variable))
+      (declaration
+        (property_name)
+        (variable))))
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name)))
+    (block
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            (variable)
+            (plain_value))
+          (argument
+            (variable)
+            (plain_value)))))))
+
+==============================
+Probe: function with default arguments and return
+==============================
+
+@function double($n, $by: 2) {
+  @return $n * $by;
+}
+
+---
+
+(stylesheet
+  (function_statement
+    (identifier)
+    (parameters
+      (parameter
+        (variable))
+      (parameter
+        (variable)
+        (integer_value)))
+    (block
+      (return_statement
+        (binary_expression
+          (variable)
+          (variable))))))
+
+==============================
+Probe: content block with arguments
+==============================
+
+@mixin hover($state) {
+  &:hover {
+    @content($state);
+  }
+}
+
+---
+
+(stylesheet
+  (mixin_statement
+    (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (rule_set
+        (selectors
+          (pseudo_class_selector
+            (nesting_selector)
+            (class_name)))
+        (block
+          (postcss_statement
+            (at_keyword)
+            (parenthesized_value
+              (variable))))))))
+
+==============================
+Probe: include with a content block
+==============================
+
+.a {
+  @include breakpoint(md) {
+    color: red;
+  }
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name)))
+    (block
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            (plain_value)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: if, else if, and else
+==============================
+
+@if $a == 1 {
+  a: 1;
+} @else if $a == 2 {
+  a: 2;
+} @else {
+  a: 3;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    (binary_expression
+      (variable)
+      (integer_value))
+    (block
+      (declaration
+        (property_name)
+        (integer_value)))
+    (else_if_clause
+      (binary_expression
+        (variable)
+        (integer_value))
+      (block
+        (declaration
+          (property_name)
+          (integer_value))))
+    (else_clause
+      (block
+        (declaration
+          (property_name)
+          (integer_value))))))
+
+==============================
+Probe: each over a map with key and value
+==============================
+
+@each $name, $glyph in $icons {
+  .icon-#{$name}:before {
+    content: $glyph;
+  }
+}
+
+---
+
+(stylesheet
+  (each_statement
+    (variable)
+    (variable)
+    (variable)
+    (block
+      (rule_set
+        (selectors
+          (pseudo_class_selector
+            (class_selector
+              (class_name
+                (identifier)
+                (interpolation
+                  (variable))))
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (variable)))))))
+
+==============================
+Probe: for through
+==============================
+
+@for $i from 1 through 3 {
+  .item-#{$i} {
+    width: 2em * $i;
+  }
+}
+
+---
+
+(stylesheet
+  (for_statement
+    (variable)
+    (integer_value)
+    (integer_value)
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (identifier)
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (binary_expression
+              (integer_value
+                (unit))
+              (variable))))))))
+
+==============================
+Probe: while
+==============================
+
+@while $i > 0 {
+  .item-#{$i} {
+    width: 2em * $i;
+  }
+}
+
+---
+
+(stylesheet
+  (while_statement
+    (binary_expression
+      (variable)
+      (integer_value))
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (identifier)
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (binary_expression
+              (integer_value
+                (unit))
+              (variable))))))))
+
+==============================
+Probe: placeholder in a selector list
+==============================
+
+%message-shared {
+  border: 1px solid #ccc;
+}
+
+.message, %other {
+  padding: 10px;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (placeholder
+        (identifier)))
+    (block
+      (declaration
+        (property_name)
+        (integer_value
+          (unit))
+        (plain_value)
+        (color_value))))
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name))
+      (placeholder
+        (identifier)))
+    (block
+      (declaration
+        (property_name)
+        (integer_value
+          (unit))))))
+
+==============================
+Probe: parent selector suffix
+==============================
+
+.block {
+  &__element {
+    color: red;
+  }
+  &--modifier {
+    color: blue;
+  }
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name)))
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (nesting_selector)
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (rule_set
+        (selectors
+          (class_selector
+            (nesting_selector)
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: interpolation in selectors and property names
+==============================
+
+.icon-#{$name} {
+  margin-#{$side}: 1px;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name
+          (identifier)
+          (interpolation
+            (variable)))))
+    (block
+      (declaration
+        (property_name
+          (identifier)
+          (interpolation
+            (variable)))
+        (integer_value
+          (unit))))))
+
+==============================
+Probe: module function call
+==============================
+
+.a {
+  width: math.div(10px, 2);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name)))
+    (block
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (integer_value
+              (unit))
+            (integer_value)))))))
+
+==============================
+Probe: debug
+==============================
+
+@debug "value: #{$x}";
+
+---
+
+(stylesheet
+  (debug_statement
+    (string_value)))
+
+==============================
+Probe: line comments
+==============================
+
+// a line comment
+.a {
+  // inside a block
+  color: red; // trailing
+}
+
+---
+
+(stylesheet
+  (js_comment)
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name)))
+    (block
+      (js_comment)
+      (declaration
+        (property_name)
+        (plain_value))
+      (js_comment))))
+
+==============================
+Probe: use with an alias
+==============================
+
+@use "sass:math" as m;
+@use "./theme" as *;
+
+---
+
+(stylesheet
+  (use_statement
+    (string_value)
+    (as_clause
+      (namespace_name)))
+  (use_statement
+    (string_value)
+    (as_clause)))
+
+==============================
+Probe: use with configuration
+==============================
+
+@use "library" with ($black: #222, $border-radius: 0.1rem);
+
+---
+
+(stylesheet
+  (use_statement
+    (string_value)
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (color_value))
+        (map_pair
+          key: (variable)
+          value: (float_value
+            (unit)))))))
+
+==============================
+Probe: use with alias and configuration
+==============================
+
+@use "library" as lib with ($a: 1);
+
+---
+
+(stylesheet
+  (use_statement
+    (string_value)
+    (as_clause
+      (namespace_name))
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (integer_value))))))
+
+==============================
+Probe: forward with show and hide
+==============================
+
+@forward "src/list" hide list-reset, $horizontal-list-gap;
+@forward "src/list" show list-reset, $horizontal-list-gap;
+
+---
+
+(stylesheet
+  (forward_statement
+    (string_value)
+    (hide_clause
+      (identifier)
+      (variable)))
+  (forward_statement
+    (string_value)
+    (show_clause
+      (identifier)
+      (variable))))
+
+==============================
+Probe: forward with a prefix
+==============================
+
+@forward "library" as btn-*;
+@forward "library" as btn-* show a, b with ($c: 1);
+
+---
+
+(stylesheet
+  (forward_statement
+    (string_value)
+    (as_clause
+      (namespace_name)))
+  (forward_statement
+    (string_value)
+    (as_clause
+      (namespace_name))
+    (show_clause
+      (identifier)
+      (identifier))
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (integer_value))))))
+
+==============================
+Probe: variable flags
+==============================
+
+$primary: blue !default;
+$scope: 1 !global;
+$both: 2 !default !global;
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (plain_value)
+    (flag))
+  (declaration
+    (property_name)
+    (integer_value)
+    (flag))
+  (declaration
+    (property_name)
+    (integer_value)
+    (flag)
+    (flag)))
+
+==============================
+Probe: variable flag on a last declaration
+==============================
+
+a {
+  $x: 1 !default
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (integer_value)
+        (flag)))))
+
+==============================
+Probe: flat map
+==============================
+
+$breakpoints: (small: 576px, medium: 768px, large: 992px);
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (map_value
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit)))
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit)))
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit))))))
+
+==============================
+Probe: nested map
+==============================
+
+$config: (
+  colors: (primary: #333, secondary: (light: #eee, dark: #111)),
+  "quoted": 1,
+  $key: 2,
+);
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (map_value
+      (map_pair
+        key: (plain_value)
+        value: (map_value
+          (map_pair
+            key: (plain_value)
+            value: (color_value))
+          (map_pair
+            key: (plain_value)
+            value: (map_value
+              (map_pair
+                key: (plain_value)
+                value: (color_value))
+              (map_pair
+                key: (plain_value)
+                value: (color_value))))))
+      (map_pair
+        key: (string_value)
+        value: (integer_value))
+      (map_pair
+        key: (variable)
+        value: (integer_value)))))
+
+==============================
+Probe: map with list values
+==============================
+
+$fonts: (body: 1px solid red, mono: (a, b));
+
+---
+
+(stylesheet
+  (declaration
+    (property_name)
+    (map_value
+      (map_pair
+        key: (plain_value)
+        value: (integer_value
+          (unit))
+        value: (plain_value)
+        value: (plain_value))
+      (map_pair
+        key: (plain_value)
+        value: (list_value
+          (plain_value)
+          (plain_value))))))
+
+==============================
+Probe: parenthesized value is not a map
+==============================
+
+a {
+  width: (1 + 2) * 3;
+  margin: (a, b);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (binary_expression
+          (parenthesized_value
+            (binary_expression
+              (integer_value)
+              (integer_value)))
+          (integer_value)))
+      (declaration
+        (property_name)
+        (list_value
+          (plain_value)
+          (plain_value))))))
+
+
+==============================
+Probe: not in an if condition
+==============================
+
+@if not $enabled {
+  a: b;
+}
+@else if not index($list, 1) {
+  c: d;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (unary_expression
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))
+    (else_if_clause
+      condition: (unary_expression
+        (call_expression
+          (function_name)
+          (arguments
+            (variable)
+            (integer_value))))
+      (block
+        (declaration
+          (property_name)
+          (plain_value))))))
+
+==============================
+Probe: and and or in an if condition
+==============================
+
+@if $a == 1 and $b == 2 or $c {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (binary_expression
+          (variable)
+          (integer_value))
+        (binary_expression
+          (variable)
+          (integer_value)))
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence not then and
+==============================
+
+@if not $a and $b {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (unary_expression
+        (variable))
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence and then or
+==============================
+
+@if $a and $b or $c {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (variable))
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence or then and
+==============================
+
+@if $a or $b and $c {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (variable)
+      (binary_expression
+        (variable)
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence equality then and
+==============================
+
+@if $a == 1 and $b != 2 {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (integer_value))
+      (binary_expression
+        (variable)
+        (integer_value)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence relational then equality
+==============================
+
+@if $a < 1 == $b > 2 {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (integer_value))
+      (binary_expression
+        (variable)
+        (integer_value)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence addition then relational
+==============================
+
+@if $a + 1 > $b - 2 {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (binary_expression
+        (variable)
+        (integer_value))
+      (binary_expression
+        (variable)
+        (integer_value)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: precedence multiplication then addition
+==============================
+
+a {
+  width: $a + $b * $c - $d / 2;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (binary_expression
+          (binary_expression
+            (variable)
+            (binary_expression
+              (variable)
+              (variable)))
+          (binary_expression
+            (variable)
+            (integer_value)))))))
+
+==============================
+Probe: parenthesized boolean
+==============================
+
+@if ($a == 1) and ($b or not $c) {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      (parenthesized_value
+        (binary_expression
+          (variable)
+          (integer_value)))
+      (parenthesized_value
+        (binary_expression
+          (variable)
+          (unary_expression
+            (variable)))))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: while with not
+==============================
+
+@while not $done {
+  a: b;
+}
+
+---
+
+(stylesheet
+  (while_statement
+    (unary_expression
+      (variable))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: return with boolean operators
+==============================
+
+@function both($a, $b) {
+  @return $a and $b;
+}
+
+---
+
+(stylesheet
+  (function_statement
+    name: (identifier)
+    (parameters
+      (parameter
+        (variable))
+      (parameter
+        (variable)))
+    (block
+      (return_statement
+        (binary_expression
+          (variable)
+          (variable))))))
+
+==============================
+Probe: for to
+==============================
+
+@for $i from 1 to 3 {
+  .item-#{$i} {
+    width: 2em * $i;
+  }
+}
+
+---
+
+(stylesheet
+  (for_statement
+    (variable)
+    from: (integer_value)
+    to: (integer_value)
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (identifier)
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (binary_expression
+              (integer_value
+                (unit))
+              (variable))))))))
+
+==============================
+Probe: each with three variables
+==============================
+
+@each $name, $glyph, $size in (a, b, 1), (c, d, 2) {
+  .icon-#{$name} {
+    content: $glyph;
+  }
+}
+
+---
+
+(stylesheet
+  (each_statement
+    key: (variable)
+    value: (variable)
+    value: (variable)
+    (list_value
+      (plain_value)
+      (plain_value)
+      (integer_value))
+    (list_value
+      (plain_value)
+      (plain_value)
+      (integer_value))
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (identifier)
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (variable)))))))
+
+==============================
+Probe: each with a single variable
+==============================
+
+@each $name in a, b, c {
+  .#{$name} {
+    a: b;
+  }
+}
+
+---
+
+(stylesheet
+  (each_statement
+    value: (variable)
+    (plain_value)
+    (plain_value)
+    (plain_value)
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name
+              (interpolation
+                (variable)))))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: mixin with rest arguments
+==============================
+
+@mixin transition($args...) {
+  transition: $args;
+}
+
+---
+
+(stylesheet
+  (mixin_statement
+    name: (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (variable)))))
+
+==============================
+Probe: include with spread arguments
+==============================
+
+a {
+  @include transition($values...);
+  @include button($size, $rest...);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            value: (variable))))
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            value: (variable))
+          (argument
+            value: (variable)))))))
+
+==============================
+Probe: include with using
+==============================
+
+@include media-hover using ($state) {
+  color: $state;
+}
+@include foo(1, 2) using ($a, $b) {
+  x: $a;
+}
+
+---
+
+(stylesheet
+  (include_statement
+    (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (variable))))
+  (include_statement
+    (identifier)
+    (arguments
+      (argument
+        value: (integer_value))
+      (argument
+        value: (integer_value)))
+    (parameters
+      (parameter
+        (variable))
+      (parameter
+        (variable)))
+    (block
+      (declaration
+        (property_name)
+        (variable)))))
+
+==============================
+Probe: module qualified include
+==============================
+
+a {
+  @include mat.button-theme($theme);
+  @include mat.core;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (include_statement
+        (identifier)
+        (arguments
+          (argument
+            value: (variable))))
+      (include_statement
+        (identifier)))))
+
+
+==============================
+Probe: call with a spread argument
+==============================
+
+a {
+  n: fn($a, $rest...);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (variable)
+            (variable)))))))
+
+==============================
+Probe: call with keyword arguments
+==============================
+
+a {
+  o: color.adjust($c, $lightness: -10%, $alpha: 0.5);
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (variable)
+            name: (variable)
+            (integer_value
+              (unit))
+            name: (variable)
+            (float_value)))))))
+
+==============================
+Probe: not, and, and or remain valid identifiers
+==============================
+
+a:not(.b) {
+  and: 1;
+  or: 2;
+}
+.and, .or, .not {
+  x: y;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (pseudo_class_selector
+        (tag_name)
+        (class_name)
+        (arguments
+          (class_selector
+            (class_name)))))
+    (block
+      (declaration
+        (property_name)
+        (integer_value))
+      (declaration
+        (property_name)
+        (integer_value))))
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name))
+      (class_selector
+        (class_name))
+      (class_selector
+        (class_name)))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+
+==============================
+Probe: media range query
+==============================
+
+@media (width <= 768px) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (media_statement
+    (range_query
+      (feature_name)
+      (integer_value
+        (unit)))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: media range query with two bounds and a boolean
+==============================
+
+@media (400px <= width <= 700px) and (orientation: portrait) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (media_statement
+    (binary_query
+      (range_query
+        (integer_value
+          (unit))
+        (feature_name)
+        (integer_value
+          (unit)))
+      (feature_query
+        (feature_name)
+        (plain_value)))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: media range query with a variable or interpolation
+==============================
+
+@media (width >= $bp) and (width < #{$max}) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (media_statement
+    (binary_query
+      (range_query
+        (feature_name)
+        (variable))
+      (range_query
+        (feature_name)
+        (interpolation
+          (variable))))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: media feature with a variable value
+==============================
+
+@media (min-width: $bp) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (media_statement
+    (feature_query
+      (feature_name)
+      (variable))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: media query with interpolation
+==============================
+
+@media #{$query} and (hover: hover) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (media_statement
+    (binary_query
+      (interpolation
+        (variable))
+      (feature_query
+        (feature_name)
+        (plain_value)))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: container query
+==============================
+
+@container (min-width: 400px) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (container_statement
+    (feature_query
+      (feature_name)
+      (integer_value
+        (unit)))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: named container range query
+==============================
+
+@container sidebar (width <= 900px) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (container_statement
+    (container_name)
+    (range_query
+      (feature_name)
+      (integer_value
+        (unit)))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: container query with not and and
+==============================
+
+@container not (width < 400px) {
+  a {
+    b: c;
+  }
+}
+@container (width > 400px) and (height > 400px) {
+  a {
+    b: c;
+  }
+}
+
+---
+
+(stylesheet
+  (container_statement
+    (unary_query
+      (range_query
+        (feature_name)
+        (integer_value
+          (unit))))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))))
+  (container_statement
+    (binary_query
+      (range_query
+        (feature_name)
+        (integer_value
+          (unit)))
+      (range_query
+        (feature_name)
+        (integer_value
+          (unit))))
+    (block
+      (rule_set
+        (selectors
+          (tag_name))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: keyframes with a selector list
+==============================
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  12.5% {
+    opacity: 0.5;
+  }
+  from {
+    opacity: 0;
+  }
+}
+
+---
+
+(stylesheet
+  (keyframes_statement
+    (keyframes_name)
+    (keyframe_block_list
+      (keyframe_block
+        (integer_value
+          (unit))
+        (integer_value
+          (unit))
+        (block
+          (declaration
+            (property_name)
+            (integer_value))))
+      (keyframe_block
+        (float_value
+          (unit))
+        (block
+          (declaration
+            (property_name)
+            (float_value))))
+      (keyframe_block
+        (from)
+        (block
+          (declaration
+            (property_name)
+            (integer_value)))))))
+
+==============================
+Probe: extend a placeholder
+==============================
+
+a {
+  @extend %message;
+  @extend %other !optional;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (extend_statement
+        (placeholder
+          (identifier)))
+      (extend_statement
+        (placeholder
+          (identifier))
+        (flag)))))
+
+==============================
+Probe: extend a class with optional
+==============================
+
+a {
+  @extend .b;
+  @extend .c !optional;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (extend_statement
+        (class_selector
+          (class_name)))
+      (extend_statement
+        (class_selector
+          (class_name))
+        (flag)))))
+
+==============================
+Probe: at-root forms
+==============================
+
+@at-root {
+  .a {
+    b: c;
+  }
+}
+.a {
+  @at-root .b {
+    c: d;
+  }
+  @at-root #{&}-x {
+    c: d;
+  }
+  @at-root (without: media) {
+    c: d;
+  }
+}
+
+---
+
+(stylesheet
+  (at_root_statement
+    (block
+      (rule_set
+        (selectors
+          (class_selector
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))))
+  (rule_set
+    (selectors
+      (class_selector
+        (class_name)))
+    (block
+      (at_root_statement
+        (selectors
+          (class_selector
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (at_root_statement
+        (interpolation
+          (nesting_selector))
+        (identifier)
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (at_root_statement
+        (map_value
+          (map_pair
+            key: (plain_value)
+            value: (plain_value)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: nested properties
+==============================
+
+a {
+  font: {
+    family: x;
+    size: 1px;
+  }
+  margin: 0 auto {
+    left: 1px;
+  }
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (nested_declaration
+        (property_name)
+        (block
+          (declaration
+            (property_name)
+            (plain_value))
+          (declaration
+            (property_name)
+            (integer_value
+              (unit)))))
+      (nested_declaration
+        (property_name)
+        (integer_value)
+        (plain_value)
+        (block
+          (declaration
+            (property_name)
+            (integer_value
+              (unit))))))))
+
+==============================
+Probe: pseudo class selectors are not nested properties
+==============================
+
+a {
+  &:hover {
+    b: c;
+  }
+  li:first-child {
+    d: e;
+  }
+  f: g;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (rule_set
+        (selectors
+          (pseudo_class_selector
+            (nesting_selector)
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (rule_set
+        (selectors
+          (pseudo_class_selector
+            (tag_name)
+            (class_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: leading combinators in nested selectors
+==============================
+
+a {
+  > b {
+    c: d;
+  }
+  ~ i {
+    c: d;
+  }
+  + p {
+    c: d;
+  }
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (rule_set
+        (selectors
+          (child_selector
+            (tag_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (rule_set
+        (selectors
+          (sibling_selector
+            (tag_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (rule_set
+        (selectors
+          (adjacent_sibling_selector
+            (tag_name)))
+        (block
+          (declaration
+            (property_name)
+            (plain_value)))))))
+
+==============================
+Probe: nth expressions
+==============================
+
+a:nth-child(n + 3),
+b:nth-child(-n + 3),
+c:nth-child(2n+1),
+d:nth-child(odd) {
+  e: f;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (pseudo_class_selector
+        (tag_name)
+        (class_name)
+        (arguments
+          (nth_expression)))
+      (pseudo_class_selector
+        (tag_name)
+        (class_name)
+        (arguments
+          (nth_expression)))
+      (pseudo_class_selector
+        (tag_name)
+        (class_name)
+        (arguments
+          (nth_expression)))
+      (pseudo_class_selector
+        (tag_name)
+        (class_name)
+        (arguments
+          (tag_name))))
+    (block
+      (declaration
+        (property_name)
+        (plain_value)))))
+
+==============================
+Probe: custom properties
+==============================
+
+a {
+  --a: 1px;
+  --b: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 0 1px red;
+  --c: var(--a, calc(100% - 4px));
+  --d: #{$v};
+  --e-#{$n}: 1;
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (integer_value
+          (unit)))
+      (declaration
+        (property_name)
+        (integer_value)
+        (integer_value
+          (unit))
+        (integer_value
+          (unit))
+        (call_expression
+          (function_name)
+          (arguments
+            (integer_value)
+            (integer_value)
+            (integer_value)
+            (float_value)))
+        (plain_value)
+        (integer_value)
+        (integer_value)
+        (integer_value
+          (unit))
+        (plain_value))
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (plain_value)
+            (call_expression
+              (function_name)
+              (arguments
+                (binary_expression
+                  (integer_value
+                    (unit))
+                  (integer_value
+                    (unit))))))))
+      (declaration
+        (property_name)
+        (interpolation
+          (variable)))
+      (declaration
+        (property_name
+          (identifier)
+          (interpolation
+            (variable)))
+        (integer_value)))))
+
+==============================
+Probe: interpolation in values
+==============================
+
+a {
+  color: #{$good};
+  width: calc(100% - #{$x});
+  height: calc(#{$a} + #{$b});
+  background: var(--app-#{$tone}-container);
+  content: foo-#{$x};
+  padding: #{$a}-#{$b};
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (declaration
+        (property_name)
+        (interpolation
+          (variable)))
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (binary_expression
+              (integer_value
+                (unit))
+              (interpolation
+                (variable))))))
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (binary_expression
+              (interpolation
+                (variable))
+              (interpolation
+                (variable))))))
+      (declaration
+        (property_name)
+        (call_expression
+          (function_name)
+          (arguments
+            (identifier)
+            (interpolation
+              (variable))
+            (identifier))))
+      (declaration
+        (property_name)
+        (identifier)
+        (interpolation
+          (variable)))
+      (declaration
+        (property_name)
+        (interpolation
+          (variable))
+        (identifier)
+        (interpolation
+          (variable))))))
+
+==============================
+Probe: import several files
+==============================
+
+@import "a", "b";
+@import 'c', 'd', 'e';
+@import url(foo.css) screen and (min-width: 1px), print;
+
+---
+
+(stylesheet
+  (import_statement
+    (string_value)
+    (string_value))
+  (import_statement
+    (string_value)
+    (string_value)
+    (string_value))
+  (import_statement
+    (call_expression
+      (function_name)
+      (arguments
+        (plain_value)))
+    (binary_query
+      (keyword_query)
+      (feature_query
+        (feature_name)
+        (integer_value
+          (unit))))
+    (keyword_query)))
+
+==============================
+Probe: include with empty parentheses
+==============================
+
+a {
+  @include m() {
+    b: c;
+  }
+  @include m();
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (include_statement
+        (identifier)
+        (arguments)
+        (block
+          (declaration
+            (property_name)
+            (plain_value))))
+      (include_statement
+        (identifier)
+        (arguments)))))
+
+
+==============================
+Probe: flag inside a forward configuration
+==============================
+
+@forward "library" with ($black: #222 !default, $radius: 2px !default);
+
+---
+
+(stylesheet
+  (forward_statement
+    (string_value)
+    (with_clause
+      (map_value
+        (map_pair
+          key: (variable)
+          value: (color_value)
+          (flag))
+        (map_pair
+          key: (variable)
+          value: (integer_value
+            (unit))
+          (flag))))))
+
+==============================
+Probe: content with a spread
+==============================
+
+@mixin m($args...) {
+  @content ($args...);
+}
+
+---
+
+(stylesheet
+  (mixin_statement
+    name: (identifier)
+    (parameters
+      (parameter
+        (variable)))
+    (block
+      (postcss_statement
+        (at_keyword)
+        (parenthesized_value
+          (variable))))))
+

@@ -1,5 +1,6 @@
 [
   "@at-root"
+  "@container"
   "@debug"
   "@error"
   "@extend"
@@ -16,11 +17,28 @@
 "@include" @keyword.import
 
 [
+  "as"
+  "with"
+  "show"
+  "hide"
+  "using"
+] @keyword.import
+
+(flag) @keyword
+
+[
+  "and"
+  "or"
+  "not"
+] @keyword.operator
+
+[
   "@while"
   "@each"
   "@for"
   "from"
   "through"
+  "to"
   "in"
 ] @keyword.repeat
 
