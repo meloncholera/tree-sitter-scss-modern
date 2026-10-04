@@ -181,6 +181,9 @@ jobs:
       - name: Check formatting of the grammar JS
         run: npm run format:check
 
+      - name: Test the release policy scripts
+        run: node --test tools/*.test.mjs
+
       - name: Verify publishable package contents
         run: |
           set -euo pipefail
